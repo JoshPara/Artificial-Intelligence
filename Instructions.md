@@ -6,6 +6,10 @@ Final Project - License Plate Detection
 https://www.youtube.com/watch?v=mkHGGgF2M1A - This is a link to the YouTube video demononstration of our project
 
 
+About:
+This project is for the final project for Introduction to Artificial Intelligence 6660-01 Fall Semester. This project is designed as a license plate detection and recognition reader using computer vision. 
+
+
 Python Requirements:
 * Python version 3.6 (although this version of Python isn't the newest version this was the version we have been using in class all semester so we continued use of it in this project)
 * For this project we used Pycharm community edition as our IDE since it has been the IDE we have personally been using all semester
