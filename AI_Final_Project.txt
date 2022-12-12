@@ -1,0 +1,135 @@
+# This is our final project for Intro to Artificial Intelligence
+# We created a license plate detection AI, it takes the image input of a license plate, and returns the license plate
+# number
+
+# Import the opencv, imutils, and pytesseract library
+import pytesseract
+import imutils
+import cv2
+
+
+# Creating a function that will serve as the main running area for our code
+def main():
+    # Specify the path in which tesseract ocr is installed on our desktop to be used later
+    pytesseract.pytesseract.tesseract_cmd = '<path to tesseract.exe here>'
+
+    # Creating a text file called "licensePlate" to be used to write the returned plate numbers to
+    file = open("LicensePlates.txt", "w+")
+    file.write("AI Licenses Plates:\n\n")
+
+    # Creating a counter and a loop to loop through several pictures of license plates. All images must be named the
+    # same with different ending numbers and located in the same folder
+    counter = 1
+    while counter <= 5:
+
+        # Function calls and saving returns to be passed
+        plate_image = detection(counter)
+        old_school_image = black_white_image(plate_image)
+        old_school_image = toned_image(old_school_image)
+        picture_edged = edged_image(old_school_image)
+        contoured_image, new_image, image_one = contours(plate_image, picture_edged)
+        contoured_image, screen_count, image_two = top_contours(contoured_image, plate_image)
+        screen_count = four_sides(contoured_image, plate_image)
+        picture_location_of_cropped = cropped_image(plate_image, screen_count)
+        plate = pytesseract.image_to_string(picture_location_of_cropped, lang='eng')
+
+        # Prints to IDE run terminal for easy and quick access of plate numbers as the program is going
+        print(f"Plate {counter}: ", plate)
+
+        # Function to write to the file
+        write_to_file(file, plate, counter)
+
+        # Increase the counter to loop to next picture
+        counter += 1
+
+
+# Function to read original image from file, resizes and displays. WaitKey(0) will allow for the image to be displayed 
+# indefinitely so that the picture can be viewed. 
+def detection(counter):
+    input_plate_image = cv2.imread(f'<path to image here>{counter}.<image extension here>', cv2.IMREAD_COLOR)
+    input_plate_image = imutils.resize(input_plate_image, width=500)
+    cv2.imshow('Starting Image', input_plate_image)
+    cv2.waitKey(0)
+    return input_plate_image
+
+
+# Function to take original image and turn it black and white, displays image and then returns the image to main
+def black_white_image(plate_image):
+    old_school_image = cv2.cvtColor(plate_image, cv2.COLOR_BGR2GRAY)
+    cv2.imshow("Black and White Image", old_school_image)
+    cv2.waitKey(0)
+    return old_school_image
+
+
+# Function to take the black and white image and reduce noise from the picture, displays the image and returns it
+def toned_image(old_school_image):
+    old_school_image = cv2.bilateralFilter(old_school_image, 11, 17, 17)
+    cv2.imshow('Reduced Noise Image', old_school_image)
+    cv2.waitKey(0)
+    return old_school_image
+
+
+# Function to take the reduced noise image, finds the edges of the license plate and returns this image to main
+def edged_image(old_school_image):
+    picture_edged = cv2.Canny(old_school_image, 30, 200)
+    cv2.imshow('Image with License Plate Edges', picture_edged)
+    cv2.waitKey(0)
+    return picture_edged
+
+
+# Function to find contours of the image to be used, displays the image and returns the several images to main
+def contours(plate_image, picture_edged):
+    contoured_image, new_image = cv2.findContours(picture_edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+    plate_image_one = plate_image.copy()
+    cv2.drawContours(plate_image_one, contoured_image, -1, (0, 255, 0), 3)
+    cv2.imshow("Contoured Image", plate_image_one)
+    cv2.waitKey(0)
+    return contoured_image, new_image, plate_image_one
+
+
+# Function to determine the strongest contours from the contoured image, displays the image and returns them
+def top_contours(contoured_image, plate_image):
+    contoured_image = sorted(contoured_image, key=cv2.contourArea, reverse=True)[:30]
+    screen_count = None
+    plate_image_two = plate_image.copy()
+    cv2.drawContours(plate_image_two, contoured_image, -1, (0, 255, 0), 3)
+    cv2.imshow("Alpha Contours", plate_image_two)
+    cv2.waitKey(0)
+    return contoured_image, screen_count, plate_image_two
+
+
+# Function that uses the strong contours to determine the license plate location in the picture, crops the image based
+# off the four sides and then returns it
+def four_sides(contoured_image, plate_image):
+    for x in contoured_image:
+        perimeter = cv2.arcLength(x, True)
+        approximate = cv2.approxPolyDP(x, 0.018 * perimeter, True)
+        if len(approximate) == 4:
+            screen_count = approximate
+            x_axis, y_axis, width, height = cv2.boundingRect(c)
+            new_image = plate_image[y_axis:y_axis + height, x_axis:x_axis + width]
+            cv2.imwrite('./cropped.png', new_image)
+            return screen_count
+
+
+# Function that draws the necessary contours around the license plate, displays the image and returns
+def cropped_image(plate_image, screen_count):
+    cv2.drawContours(plate_image, [screen_count], -1, (0, 255, 0), 3)
+    cv2.imshow("Detected License Plate", plate_image)
+    cv2.waitKey(0)
+    picture_location_of_cropped = './cropped.png'
+    cv2.imshow("License Plate", cv2.imread(picture_location_of_cropped))
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    return picture_location_of_cropped
+
+
+# Function to write to file
+def write_to_file(file, plate, counter):
+    file.write(f"License Plate {counter}\n\tPlate: {plate}\n")
+    return
+
+
+# Main call
+if __name__ == "__main__":
+    main()
