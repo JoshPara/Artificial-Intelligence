@@ -34,9 +34,15 @@ Instructions:
 9. Once all these steps are followed, tesseract is installed, and the paths are changed in the code, the program is ready to run!
 10. While the program is running windows with the picture that is being interpreted at varies steps will be displayed on the screen. The name of what step is on will be at the top of the picture window. In order to move onto the next step in the program these picture windows will need to be closed after you are done viewing them each time.
 11. Once each picture is complete the detected license plate number will be displayed in the runtime Python Terminal at the bottom of the IDE as well as written to the text document that is being created. The program will then loop and repeat the same steps for the rest of the pictures.
-12. Once all the pictures have been analyzed the program will complete and the text file containing all the license plate numbers will be located in the same folder as this python script exists in on the machine. 
+12. Once all the pictures have been analyzed the program will complete and the text file containing all the license plate numbers (LicensePlates.txt) will be located in the same folder as this python script exists in on the machine. 
 
 
 Additional Notes:
 * If using a different picture of a license plate make sure the picture is very high quality, make sure the picture is a PNG, and make sure the picture is a straight on view to the license plate so that the detection can be the most accurate
 * If adding or subtracting pictures to the picture folder in hopes of running more pictures through the program, line 23 must be changed from 5 (since that is how many pictures we have in our picture folder) to whatever number of pictures that are in the folder
+* After the program has run completely there will be an image saved in the same folder as the license plate text document, this image is the altered image from the last picture that was run through the program before it was sent to the tesseract application.
+
+Additional Knowledge:
+* Pytesseract - This serves as a wrapper for the Tessaract Optical Character Recognition Applicaiton
+* Imutils - This library provides useful functions for image altering
+* Opencv-contrib-python - This libary provides useful functions to help solve computer vision tasks
