@@ -1,7 +1,7 @@
 # Artificial-Intelligence
 Final Project - License Plate Detection
 
-**User Documentation for use and understanding** 
+**User Documentation - For Use and Understanding** 
 
 https://www.youtube.com/watch?v=mkHGGgF2M1A - This is a link to the YouTube video demononstration of our project
 
